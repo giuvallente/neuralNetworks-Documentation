@@ -1,7 +1,7 @@
 site_name: Artificial Neural Networks and Deep Learning                  
 site_author: Giúlia Gomes Vallente            
 site_url: https://giuvallente.github.io/neuralNetworks-Documentation   
-repo_url: https://github.com/giuvallente/neuralNetworks-Documentation/   
+repo_url: https://github.com/giuvallente/neuralNetworks/   
 repo_name: giuvallente/neuralNetworks-Documentation                     
 
 theme:
@@ -34,7 +34,6 @@ theme:
     - navigation.path
     - navigation.tracking
     - navigation.expand
-    - navigation.indexes
   icon:
     admonition:
       note: fontawesome/solid/note-sticky
@@ -139,4 +138,4 @@ nav:
   #   - 2. Regressão: project/regression/index.md
   #   - 3. Generativo: project/generative/index.md
 
-  - Enunciados da disciplina ↗: https://insper.github.io/ann-dl/
+  - Course Assignments ↗: https://insper.github.io/ann-dl/

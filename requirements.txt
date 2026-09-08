@@ -1,0 +1,16 @@
+# --- site (mkdocs) --------------------------------------------------------
+# O MkDocs 2.0 remove o sistema de plugins e quebra todos os plugins abaixo, sem
+# caminho de migração. 
+mkdocs<2
+mkdocs-material
+mkdocs-material-extensions
+mkdocs-minify-plugin
+mkdocs-glightbox
+mkdocs-git-authors-plugin
+mkdocs-git-revision-date-localized-plugin
+mkdocs-jupyter
+ipykernel
+numpy
+pandas
+matplotlib
+scikit-learn

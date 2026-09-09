@@ -30,11 +30,13 @@ The parameters used to generate each cloud were:
 
 Below, you can check the code that generated these clouds.
 
-# INSERIR O CÓDIGO AQUI
+``` { .python .copy .select linenums="1" }
+   --8<-- "exercises/data/exercise1.py:itemA"
+```
 
 Figure 1 below shows a 2D scatter plot of all the points, colored by class, with each cloud's center marked on the plot.
 
-# INSERIR FIGURA 1 AQUI
+![Figure 1](figures/figure1.png)
 
 ### B - More or Less Spread Out
 
@@ -44,11 +46,13 @@ $$s \in \{0.5,\ 1.0,\ 2.0,\ 4.0\}$$
 
 This produces 4 separate datasets of 4 classes each. Below, you can check the code that generated these 4 datasets.
 
-# INSERIR CÓDIGO AQUI
+``` { .python .copy .select linenums="1" }
+   --8<-- "exercises/data/exercise1.py:itemB-dataset"
+```
 
 Figure 2 shows 4 subplots (one per value of $s$), sharing the same axis limits so the comparison is fair.
 
-# INSERIR FIGURA 2 AQUI
+![Figure 2](figures/figure2.png)
 
 For $s = 1$ only, the separation ratio is computed for each pair of classes $(i, j)$ — a measure of how distinct two clouds are relative to their size, comparing the distance between their centers to their average spread. The higher the ratio, the more cleanly separated the classes are; values below 1 suggest the clouds are close enough to overlap:
 
@@ -56,23 +60,62 @@ $$r_{ij} = \frac{\|\mu_i - \mu_j\|}{\bar{\sigma}_i + \bar{\sigma}_j}, \qquad \ba
 
 There are 6 pairs in total—these are reported in a table below, along with which pair has the smallest ratio.
 
-# INSERIR TABELA
+| Pair | Distance | std_i + std_j | Ratio |
+|------|----------|----------------|-------|
+| (0,1) | 4.243  | 3.200 | 1.326 |
+| (0,2) | 6.325  | 2.550 | 2.480 |
+| (0,3) | 13.038 | 2.900 | 4.496 |
+| (1,2) | 5.831  | 2.450 | 2.379 |
+| (1,3) | 10.198 | 2.800 | 3.642 |
+| (2,3) | 7.616  | 2.150 | 3.542 |
+
+Smallest ratio: pair (0,1) = 1.326 at $s = 1$ <br>
+At $s = 2$, that smallest ratio becomes: $1.326 / 2 = 0.663$
+
+``` { .python .copy .select linenums="1" }
+   --8<-- "exercises/data/exercise1.py:itemB-separation"
+```
 
 Since the means never change, $r_{ij}$ scales with $1/s$: this makes it possible to state what the smallest $r_{ij}$ becomes at $s = 2$ without having to generate anything new—just by scaling the existing value.
 
 Beyond that single ratio, a broader measure is used to track separability across all four scale factors: the mixing rate, defined as the fraction of points whose *nearest* class center isn't their own. This is computed purely geometrically, by comparing each point against the 4 means.
 
+| $s$ | Mixing rate |
+|-----|-------------|
+| 0.5 | 0.003 (0.3%) |
+| 1.0 | 0.072 (7.2%) |
+| 2.0 | 0.193 (19.3%) |
+| 4.0 | 0.482 (48.2%) |
+
+``` { .python .copy .select linenums="1" }
+   --8<-- "exercises/data/exercise1.py:itemB-mixing"
+```
+
 Figure 3 plots this mixing rate against $s$, making it possible to answer: at which scale factor do the clouds stop being separable by straight lines? And what happens to the smallest $r_{ij}$ at that same point?
 
-# INSERIR FIGURA 3
+``` { .python .copy .select linenums="1" }
+   --8<-- "exercises/data/exercise1.py:itemB-plot"
+```
 
-# INSERIR RESPOSTA DAS PERGUNTAS
+![Figure 3](figures/figure3.png)
+
+# RESPOSTAS
 
 ### C - Analysis
 
 Answering the questions below:
 
-# INSERIR RESPOSTAS
+1. Describe the overlap of the four classes in the original dataset (s=1). Could a single linear boundary separate all classes? What about a set of linear boundaries?
+
+   **A:** In the original dataset (s=1), the four classes form distinguishable clusters, although some overlap occurs, especially between the closer classes 0 and 1. A single linear boundary cannot separate four classes because it divides the plane into only two regions. A set of linear boundaries could create one decision region for each class and achieve good separation, but perfect classification would still be unlikely in the overlapping areas.
+
+2. Sketch on Figure 1 the decision boundaries you think a trained neural network might learn.
+
+   **A:** A trained neural network would likely learn several piecewise-linear decision boundaries that divide the plane into four regions, one for each class. These boundaries would generally lie between neighboring clusters and adjust to their different positions and spreads. The boundary between classes 0 and 1 would be the most difficult to place because these classes have the greatest relative overlap.
+
+3. Relate your sketch to item B: the more spread out the clouds are, what happens to the region where the network necessarily makes mistakes?
+
+   **A:** As the clouds become more spread out, the overlap between classes increases. Consequently, the regions where points from different classes are mixed become larger. In these regions, even an optimal neural network cannot classify every point correctly because similar points may belong to different classes. Therefore, increasing the standard deviation enlarges the unavoidable error regions and increases the expected misclassification rate.
 
 ## Exercise 2 - Non-Linearity in Higher Dimensions
 
@@ -85,18 +128,22 @@ For this dataset, 500 samples are generated for Class A and another 500 for Clas
 * **Class A**:
 
   Mean vector:
-  $\mu_A = [0, 0, 0, 0, 0]$
+
+  $$\mu_A = [0, 0, 0, 0, 0]$$
 
   Covariance matrix:
-  $\Sigma_A = \begin{pmatrix} 1.0 & 0.8 & 0.1 & 0.0 & 0.0 \\ 0.8 & 1.0 & 0.3 & 0.0 & 0.0 \\ 0.1 & 0.3 & 1.0 & 0.5 & 0.0 \\ 0.0 & 0.0 & 0.5 & 1.0 & 0.2 \\ 0.0 & 0.0 & 0.0 & 0.2 & 1.0 \end{pmatrix}$
+
+  $$\Sigma_A = \begin{pmatrix} 1.0 & 0.8 & 0.1 & 0.0 & 0.0 \\ 0.8 & 1.0 & 0.3 & 0.0 & 0.0 \\ 0.1 & 0.3 & 1.0 & 0.5 & 0.0 \\ 0.0 & 0.0 & 0.5 & 1.0 & 0.2 \\ 0.0 & 0.0 & 0.0 & 0.2 & 1.0 \end{pmatrix}$$
 
 * **Class B**:
 
   Mean vector:
-  $\mu_B = [1.5, 1.5, 1.5, 1.5, 1.5]$
+
+  $$\mu_B = [1.5, 1.5, 1.5, 1.5, 1.5]$$
 
   Covariance matrix:
-  $\Sigma_B = \begin{pmatrix} 1.5 & -0.7 & 0.2 & 0.0 & 0.0 \\ -0.7 & 1.5 & 0.4 & 0.0 & 0.0 \\ 0.2 & 0.4 & 1.5 & 0.6 & 0.0 \\ 0.0 & 0.0 & 0.6 & 1.5 & 0.3 \\ 0.0 & 0.0 & 0.0 & 0.3 & 1.5 \end{pmatrix}$
+
+  $$\Sigma_B = \begin{pmatrix} 1.5 & -0.7 & 0.2 & 0.0 & 0.0 \\ -0.7 & 1.5 & 0.4 & 0.0 & 0.0 \\ 0.2 & 0.4 & 1.5 & 0.6 & 0.0 \\ 0.0 & 0.0 & 0.6 & 1.5 & 0.3 \\ 0.0 & 0.0 & 0.0 & 0.3 & 1.5 \end{pmatrix}$$
 
 # INSERIR CODIGO AQUI
 

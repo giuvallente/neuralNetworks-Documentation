@@ -1,0 +1,3 @@
+[submodule "neuralNetworks"]
+	path = neuralNetworks
+	url = https://github.com/giuvallente/neuralNetworks

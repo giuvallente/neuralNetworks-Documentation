@@ -6,7 +6,6 @@ repo_name: giuvallente/neuralNetworks-Documentation
 
 theme:
   name: material
-  language: theme:
   language: en
   palette:
     # Modo claro

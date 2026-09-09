@@ -99,7 +99,9 @@ Figure 3 plots this mixing rate against $s$, making it possible to answer: at wh
 
 ![Figure 3](figures/figure3.png)
 
-# RESPOSTAS
+At s ≈ 1.33, the closest pair of classes (0 and 1) stop being linearly separable — that's where their separation ratio $r_{01}$ crosses below 1.
+
+At that same point, the smallest $r_{ij}$ (for pair 0,1) drops to exactly 1 (from 1.326 at s=1) and keeps falling below 1 as s increases further — meaning the distance between class means is no longer larger than their combined spread, so the clouds start overlapping instead of being cleanly separable by a line.
 
 ### C - Analysis
 
@@ -145,7 +147,9 @@ For this dataset, 500 samples are generated for Class A and another 500 for Clas
 
   $$\Sigma_B = \begin{pmatrix} 1.5 & -0.7 & 0.2 & 0.0 & 0.0 \\ -0.7 & 1.5 & 0.4 & 0.0 & 0.0 \\ 0.2 & 0.4 & 1.5 & 0.6 & 0.0 \\ 0.0 & 0.0 & 0.6 & 1.5 & 0.3 \\ 0.0 & 0.0 & 0.0 & 0.3 & 1.5 \end{pmatrix}$$
 
-# INSERIR CODIGO AQUI
+``` { .python .copy .select linenums="1" }
+   --8<-- "exercises/data/exercise2.py:itemA"
+```
 
 ### B - Dataset II: Concentric Shells
 
@@ -158,7 +162,9 @@ Here, a second dataset is built—again 500 samples per class, still in 5 dimens
 
 The result is one class forming a dense ball near the center, and the other forming a shell surrounding it.
 
-# INSERIR CÓDIGO AQUI
+``` { .python .copy .select linenums="1" }
+   --8<-- "exercises/data/exercise2.py:itemB"
+```
 
 ### C - Visualize and Compare
 
@@ -168,35 +174,80 @@ PCA (Principal Component Analysis) is used for this: a technique that finds the 
 
 Here, PCA is applied to project each dataset into 2 dimensions, producing two scatter plots side by side, colored by class.
 
-# INSERIR CÓDIGO
+``` { .python .copy .select linenums="1" }
+   --8<-- "exercises/data/exercise2.py:itemC-pca"
+```
 
 The result can be seen in Figure 4.
 
-# INSERIR FIGURA 4
+![Figure 4](figures/figure4.png)
 
 The explained variance of the first two components is reported for each dataset, indicating how much of the original 5D spread survives the drop to 2D—and, from that, in which dataset the 2D projection better preserves the information relevant for classification.
 
-# INSERIR VARIÂNCIAS E RESPOSTA DATASET SHIFTED GAUSSIANS
+| Dataset               |    PC1 |    PC2 |  Total |
+| --------------------- | -----: | -----: | ---------: |
+| Shifted Gaussians | 50.04% | 15.93% | 65.97% |
+| Concentric Shells | 21.59% | 21.32% | 42.91% |
 
-# INSERIR CÓDIGO
+Conclusion: Dataset I better preserves the information relevant for classification in the 2D projection.
+
+``` { .python .copy .select linenums="1" }
+   --8<-- "exercises/data/exercise2.py:itemC-explained_variance"
+```
 
 For each dataset, the distance between the class centers, $\|\mu_1 - \mu_2\|$, is computed directly in the original 5D space, without relying on any projection.
 
-# INSERIR DISTANCIAS
+## Distance Between Class Centers
 
-# INSERIR CÓDIGO
+| Dataset               | Class Centers                                                                         | Distance |
+| --------------------- | ------------------------------------------------------------------------------------- | -----------: |
+| Shifted Gaussians | A: [0.026, 0.085, 0.037, 0.019, 0.035]<br>B: [1.489, 1.499, 1.450, 1.458, 1.524]      |    3.228 |
+| Concentric Shells | C: [0.062, 0.017, −0.034, −0.001, 0.043]<br>D: [−0.108, −0.107, −0.142, 0.014, 0.166] |    0.266 |
+
+``` { .python .copy .select linenums="1" }
+   --8<-- "exercises/data/exercise2.py:itemC-distance"
+```
 
 Figure 5 then shows, for each dataset, a histogram of each point's radius $\|x\|$—how far it sits from the origin—with both classes overlaid on the same axis.
 
-# INSERIR CODIGO
-
-# INSERIR FIGURA 5
+``` { .python .copy .select linenums="1" }
+   --8<-- "exercises/data/exercise2.py:itemC-radii"
+```
+![Figure 5](figures/figure5.png)
 
 ### D - Analysis
 
 Answering the questions below:
 
-# INSERIR RESPOSTAS
+1. In Dataset II the distance between the centers is close to zero, yet the radius histograms are well separated. What does that combination tell you about the possibility of separating the classes with a hyperplane?
+
+    **A:** This combination shows that the difference between the classes is not their location but their distance from the origin. Class C forms an inner region, while Class D forms an outer shell surrounding it. A hyperplane separates points according to their position along a particular direction, so it cannot isolate the inner class from a class that surrounds it in every direction. Therefore, the classes are not linearly separable, despite their well-separated radii.
+
+2. Explain why the structure of Dataset II cannot be solved by a linear boundary, no matter how much data is collected.
+
+    **A:** Dataset II has a concentric structure: Class C is concentrated around radius 2, and Class D is concentrated around radius 5. A linear boundary divides the space into two half-spaces, but separating these classes requires a closed boundary around the inner class. Collecting more data makes the concentric structure clearer, but it does not change its geometry. Therefore, no single linear boundary can correctly separate the classes. A nonlinear boundary, such as a hypersphere, is required.
+
+3. PCA is a linear transformation. Discuss: does a 2D projection in which the classes look mixed prove that they are inseparable in the original space?
+
+    **A:** No. PCA projects the data onto a lower-dimensional linear subspace, so information contained in the discarded dimensions can be lost. In Dataset II, the first two principal components preserve only about 43% of the total variance. Furthermore, because the shell structure extends across all five dimensions, points with a large 5D radius may appear close to the origin after projection if much of their magnitude lies in the three discarded dimensions. Thus, the classes may look mixed in the PCA plot even though their 5D radii are well separated.
+
+
+    The radius histograms show that Dataset II can be separated using the nonlinear function
+
+    $$
+    f(x) = \lVert x \rVert_2
+        = \sqrt{x_1^2 + x_2^2 + x_3^2 + x_4^2 + x_5^2}.
+    $$
+
+    Since the classes have mean radii 2 and 5, a reasonable threshold is their midpoint:
+
+    $$
+    \hat{y}(x) =
+    \begin{cases}
+    C, & \text{if } \lVert x \rVert_2 < 3.5, \\
+    D, & \text{if } \lVert x \rVert_2 \geq 3.5.
+    \end{cases}
+    $$
 
 ## Exercise 3 - Preparing Real-World Data for a Neural Network
 
@@ -261,5 +312,3 @@ The data is split into train and test sets, 80/20, stratified by the target, usi
 | 11 | Colunas com valores ausentes | |
 | 12 | Features após o encoding | |
 | 13 | Faixa das features após o escalonamento | |
-
-# THIS NEEDS TO BE CHECKED

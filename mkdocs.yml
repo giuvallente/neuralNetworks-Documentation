@@ -6,7 +6,7 @@ repo_name: giuvallente/neuralNetworks-Documentation
 
 theme:
   name: material
-  language: pt-BR
+  language: en-US
   palette:
     # Modo claro
     - media: "(prefers-color-scheme: light)"
@@ -89,7 +89,7 @@ markdown_extensions:
 
 plugins:
   - search:
-      lang: pt
+      lang: en
   # Lightbox nas figuras dos relatórios
   - glightbox
   # A data da última alteração é a evidência do prazo de entrega

@@ -255,58 +255,204 @@ This part shifts to a real-world dataset from Kaggle. The focus here is on prepr
 
 The dataset used here is the [Spaceship Titanic](https://www.kaggle.com/competitions/spaceship-titanic) dataset from Kaggle, using `train.csv`—the only file with labels.
 
-# INSERIR CÓDIGO DOWNLOAD
+``` { .python .copy .select linenums="1" }
+   --8<-- "exercises/data/exercise3.py:itemA-download"
+```
 
-The goal is described first: what the `Transported` column represents, and how balanced the two labels are.
+The goal of the Spaceship Titanic dataset is to predict whether each passenger was transported to an alternate dimension after the spaceship collided with a spacetime anomaly. This outcome is represented by the binary target column `Transported`:
 
-# INSERIR RESPOSTA GOAL
+* `True`: the passenger was transported.
+* `False`: the passenger was not transported.
 
-Next, the features are listed, split into numerical (like `Age` and `RoomService`) and categorical (like `HomePlanet` and `Destination`).
+The training dataset contains 8,693 passengers, distributed as follows:
 
-# INSERIR LISTA
+| Transported | Count | Percentage |
+| ----------- | ----: | ---------: |
+| `True`      | 4,378 |     50.36% |
+| `False`     | 4,315 |     49.64% |
 
-# INSERIR CÓDIGO
+The two classes are nearly evenly distributed, with a difference of only 63 passengers. Therefore, the dataset is well balanced, and no specific technique for handling class imbalance is necessary.
+
+``` { .python .copy .select linenums="1" }
+   --8<-- "exercises/data/exercise3.py:itemA-class-balance"
+```
+
+Next, the input features are grouped into numerical, categorical, and identifier/text columns.
+
+Numerical features
+
+* `Age`: the passenger’s age.
+* `RoomService`: the amount spent on room service.
+* `FoodCourt`: the amount spent at the food court.
+* `ShoppingMall`: the amount spent at the shopping mall.
+* `Spa`: the amount spent at the spa.
+* `VRDeck`: the amount spent on the virtual-reality deck.
+
+Categorical features
+
+* `HomePlanet`: the passenger’s planet of origin.
+* `CryoSleep`: whether the passenger was placed in suspended animation.
+* `Cabin`: the passenger’s cabin, represented in the format `deck/number/side`.
+* `Destination`: the passenger’s destination planet.
+* `VIP`: whether the passenger paid for VIP service.
+
+Identifier and text columns
+
+* `PassengerId`: a unique passenger identifier in the format `group_number/passenger_number`.
+* `Name`: the passenger’s full name.
+
+Although `PassengerId` and `Name` are not regular categorical features because most of their values are unique, they may still contain useful information. For example, `PassengerId` can be used to identify passengers traveling in the same group, while `Name` may help identify family relationships.
+
+Finally, `Transported` is the target variable that the model aims to predict, so it is not included among the input features.
 
 A table then reports missing values per column, both as an absolute count and as a percentage.
 
-# INSERIR TABELA
+| Column         | Missing values | Missing percentage |
+| :------------- | -------------: | -----------------: |
+| `CryoSleep`    |            217 |              2.50% |
+| `ShoppingMall` |            208 |              2.39% |
+| `VIP`          |            203 |              2.34% |
+| `HomePlanet`   |            201 |              2.31% |
+| `Name`         |            200 |              2.30% |
+| `Cabin`        |            199 |              2.29% |
+| `VRDeck`       |            188 |              2.16% |
+| `Spa`          |            183 |              2.11% |
+| `FoodCourt`    |            183 |              2.11% |
+| `Destination`  |            182 |              2.09% |
+| `RoomService`  |            181 |              2.08% |
+| `Age`          |            179 |              2.06% |
+| `PassengerId`  |              0 |              0.00% |
+| `Transported`  |              0 |              0.00% |
 
-# INSERIR CÓDIGO
+``` { .python .copy .select linenums="1" }
+   --8<-- "exercises/data/exercise3.py:itemA-missing-values"
+```
 
 Finally, for the spending columns (`RoomService`, `FoodCourt`, `ShoppingMall`, `Spa`, `VRDeck`), the mean, median, and maximum are reported. 
 
-# INSERIR TABELA
+| Feature        |   Mean | Median |  Maximum |
+| :------------- | -----: | -----: | -------: |
+| `RoomService`  | 224.69 |    0.0 | 14,327.0 |
+| `FoodCourt`    | 458.08 |    0.0 | 29,813.0 |
+| `ShoppingMall` | 173.73 |    0.0 | 23,492.0 |
+| `Spa`          | 311.14 |    0.0 | 22,408.0 |
+| `VRDeck`       | 304.85 |    0.0 | 24,133.0 |
 
-# INSERIR DSCOBERTAS
+All five spending features have a median of zero, meaning that at least half of the passengers spent nothing in each category. In contrast, their means are noticeably greater than zero, and their maximum values are very high.
 
-# INSERIR CÓDIGO
+This difference between the mean and median suggests that the distributions are strongly right-skewed. In other words, most passengers spent little or nothing, while a small number spent very large amounts, pulling the mean upward.
+
+The large gap between zero and the maximum values also suggests considerable variation and the presence of extreme values. Among the five features, `FoodCourt` has both the highest average and the highest maximum spending.
+
+It is important to note that the difference between the mean and median mainly indicates skewness, not the amount of variation itself. Measures such as the standard deviation or interquartile range would be more appropriate for quantifying the spread.
+
+``` { .python .copy .select linenums="1" }
+   --8<-- "exercises/data/exercise3.py:itemA-spending-summary"
+```
 
 ### B - Split Before Transform
 
 The data is split into train and test sets, 80/20, stratified by the target, using a fixed seed for reproducibility.
 
-# INSERIR RESPOSTA SOBRE SPLIT ANTES DE TRANSFORM
+The split must be performed before imputation and scaling so that these preprocessing steps are fitted using only the training data. Otherwise, information from the test set could influence the imputed values and scaling parameters, causing data leakage and producing an overly optimistic evaluation of the model.
 
-# INSERIR CÓDIGO
+``` { .python .copy .select linenums="1" }
+   --8<-- "exercises/data/exercise3.py:itemB-split"
+```
 
 ### C - Preprocess
 
+Since `tanh` squashes everything into $[-1, 1]$, the inputs needed to be on a similar scale first.
+
+**1. Missing data:** The imputation approach for each column depended on whether it was numerical or categorical.
+
+Numerical features had their missing values replaced with the median from the training set. This was chosen over the mean since the spending variables are strongly right-skewed and contain extreme outliers, making the median a more robust measure of central tendency.
+
+Categorical features, on the other hand, were imputed using the most frequent category per column. Since missing values made up only a small proportion of these columns, this approach preserves valid, realistic categories without distorting the distribution.
+
+In both cases, the imputer was fit exclusively on the training set and then applied to the test set, avoiding any leakage of test information into training.
+
+``` { .python .copy .select linenums="1" }
+   --8<-- "exercises/data/exercise3.py:itemC-missing-data"
+```
+
+**2. Categorical features:** `HomePlanet`, `CryoSleep`, `Destination`, and `VIP` were converted to numerical format using one-hot encoding, since this method creates one binary column per category without imposing an artificial numerical order between them.
+
+The encoder was fitted only on the training set and then applied to the test set. Setting `handle_unknown="ignore"` ensures that any category present in the test set but absent from training doesn't cause an error — instead, all encoded columns for that feature are set to zero for the affected observation. This keeps the test set with exactly the same columns and column order as the training set.
+
+``` { .python .copy .select linenums="1" }
+   --8<-- "exercises/data/exercise3.py:itemC-categorical-encoding"
+```
+``` { .python .copy .select linenums="1" }
+   --8<-- "exercises/data/exercise3.py:itemC-categorical-join-encoded"
+```
+
+**3. Feature engineering:** The five spending columns were combined into `TotalSpend`. `Cabin`, `Name`, and `PassengerId` were dropped as non-useful inputs.
+
+``` { .python .copy .select linenums="1" }
+   --8<-- "exercises/data/exercise3.py:itemC-feature-engineering"
+```
+
+**4. Heavy tails:** The spending variables were strongly right-skewed: most passengers spent little or nothing, while a small number spent extremely large amounts. Applying the transformation
+
+$$
+x' = \log(1+x)
+$$
+
+compresses the extreme values and reduces the right skew while preserving zero values.
+
+This helps a neural network with `tanh` because very large input values can push the activation into its saturated regions near −1 or 1, where the gradient is close to zero and learning slows down. By reducing the influence of extreme values, the logarithmic transformation keeps more inputs in `tanh`'s sensitive region after scaling, where gradients are larger.
+
+The logarithm alone doesn't place the features in $[-1, 1]$, so a scaling step is still needed.
+
+``` { .python .copy .select linenums="1" }
+   --8<-- "exercises/data/exercise3.py:itemC-log-transform"
+```
+
+**5. Scaling:** Min-max normalization to the interval $[-1, 1]$ was selected because this range is directly compatible with the output range of the `tanh` activation function. Keeping numerical inputs within this range reduces the chance of producing very large activations that push `tanh` into its saturated regions, where gradients are close to zero.
+
+The scaler was fitted only on the training set and then applied unchanged to the test set, preventing data leakage. After normalization, every numerical training feature has a minimum of $-1$ and a maximum of $1$.
+
+``` { .python .copy .select linenums="1" }
+   --8<-- "exercises/data/exercise3.py:itemC-scaling"
+```
+
+``` { .python .copy .select linenums="1" }
+   --8<-- "exercises/data/exercise3.py:itemC-scaling-report"
+```
+
 ### D - Verify and Visualize
+
+Figure 6 shows the histogram of `RoomService` before and after preprocessing, illustrating how the log transformation and scaling reshaped the distribution.
+
+![Figure 6](figures/figure6.png)
+
+``` { .python .copy .select linenums="1" }
+   --8<-- "exercises/data/exercise3.py:itemD-figure6"
+```
+
+As a final check, the dataset was confirmed to have no remaining `NaN` values: 0 in the training set and 0 in the test set. The final feature matrix shapes were (6954, 17) for training and (1739, 17) for test. The value range across all numerical features fell within $[-1.000, 1.000]$ for both sets, matching `tanh`'s output range.
+
+```python { .python .copy .select linenums="1" }
+--8<-- "exercises/data/exercise3.py:itemD-final-checks"
+```
+
+The logarithmic transformation and normalization of the numerical features were likely to have the greatest effect on the network's training. The spending variables originally contained highly skewed distributions with extreme values, which could dominate the optimization process and push `tanh` neurons into their saturated regions, where gradients become very small. Applying $\log(1+x)$ reduced the influence of these extreme values, while normalization to $[-1, 1]$ placed the features on comparable scales — helping the network maintain useful gradients and train more quickly and stably.
 
 ## Results Summary
 
-| # | Item | Value |
-|---|---------|-------|
-| 1 | Mixing rate at `scale = 0.5` | |
-| 2 | Mixing rate at `scale = 1.0` | |
-| 3 | Mixing rate at `scale = 2.0` | |
-| 4 | Mixing rate at `scale = 4.0` | |
-| 5 | Smallest  | |
-| 6 | Variância explicada — PC1 + PC2 | |
-| 7 | Raio médio — casca interna | |
-| 8 | Raio médio — casca externa | |
-| 9 | Amostras de treino após o split | |
-| 10 | Amostras de teste após o split | |
-| 11 | Colunas com valores ausentes | |
-| 12 | Features após o encoding | |
-| 13 | Faixa das features após o escalonamento | |
+| # | Item | Your value |
+|---|------|------------|
+| 1 | Mixing rate at $s = 0.5$ | 0.003 |
+| 2 | Mixing rate at $s = 1.0$ | 0.072 |
+| 3 | Mixing rate at $s = 2.0$ | 0.193 |
+| 4 | Mixing rate at $s = 4.0$ | 0.482 |
+| 5 | Smallest $r_{ij}$ at $s = 1.0$, and which pair | 1.326, (0,1) |
+| 6 | Distance between centers — Dataset I | 3.228 |
+| 7 | Distance between centers — Dataset II | 0.266 |
+| 8 | Explained variance PC1 + PC2 — Dataset I | 0.6597 |
+| 9 | Explained variance PC1 + PC2 — Dataset II | 0.4291 |
+| 10 | Share of the positive class in `Transported` | 50.36% |
+| 11 | Mean and median of `FoodCourt` on the training set, before transforming | 458.08, 0.0 |
+| 12 | Final `shape` of the training feature matrix | (6954, 17) |
+| 13 | Minimum and maximum of the training and test sets after scaling | [-1.000, 1.000] |

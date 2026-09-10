@@ -384,7 +384,7 @@ The encoder was fitted only on the training set and then applied to the test set
    --8<-- "exercises/data/exercise3.py:itemC-categorical-encoding"
 ```
 ``` { .python .copy .select linenums="1" }
-   --8<-- "exercises/data/exercise3.py:itemC-categorical-join-encoded"
+   --8<-- "exercises/data/exercise3.py:itemC-join-encoded"
 ```
 
 **3. Feature engineering:** The five spending columns were combined into `TotalSpend`. `Cabin`, `Name`, and `PassengerId` were dropped as non-useful inputs.

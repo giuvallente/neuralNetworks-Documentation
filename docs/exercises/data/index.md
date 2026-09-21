@@ -433,8 +433,8 @@ Figure 6 shows the histogram of `RoomService` before and after preprocessing, il
 
 As a final check, the dataset was confirmed to have no remaining `NaN` values: 0 in the training set and 0 in the test set. The final feature matrix shapes were (6954, 17) for training and (1739, 17) for test. The value range across all numerical features fell within $[-1.000, 1.000]$ for both sets, matching `tanh`'s output range.
 
-```python { .python .copy .select linenums="1" }
---8<-- "exercises/data/exercise3.py:itemD-final-checks"
+``` { .python .copy .select linenums="1" }
+   --8<-- "exercises/data/exercise3.py:itemD-final-checks"
 ```
 
 The logarithmic transformation and normalization of the numerical features were likely to have the greatest effect on the network's training. The spending variables originally contained highly skewed distributions with extreme values, which could dominate the optimization process and push `tanh` neurons into their saturated regions, where gradients become very small. Applying $\log(1+x)$ reduced the influence of these extreme values, while normalization to $[-1, 1]$ placed the features on comparable scales — helping the network maintain useful gradients and train more quickly and stably.

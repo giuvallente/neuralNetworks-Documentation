@@ -19,8 +19,8 @@ This section looks at Perceptrons and where their limits show up. The same perce
 
 Two classes of 2D points are generated, 1000 samples per class, drawn from multivariate normal distributions:
 
-* **Class 0**: Mean = [1.5, 1.5], Covariance = [[0.5, 0], [0, 0.5]]
-* **Class 1**: Mean = [5, 5], Covariance = [[0.5, 0], [0, 0.5]]
+* **Class 0**: Mean = $[1.5, 1.5]$, Covariance = $[[0.5, 0], [0, 0.5]]$
+* **Class 1**: Mean = $[5, 5]$, Covariance = $[[0.5, 0], [0, 0.5]]$
 
 The means sit far apart relative to the spread, so the two clouds end up linearly separable, with at most a handful of exceptions.
 
@@ -30,7 +30,7 @@ The means sit far apart relative to the spread, so the two clouds end up linearl
 
 Figure 1 shows a scatter plot of all 2000 points, colored by class.
 
-![Figure 1](/neuralNetworks/exercises/perceptron/figures/figure1.png)
+![Figure 1](figures/figure1.png)
 
 ### B - Implementing the Perceptron
 
@@ -70,14 +70,14 @@ Figure 2 shows the decision boundary $\mathbf{w} \cdot \mathbf{x} + b = 0$ drawn
    --8<-- "exercises/perceptron/exercise1.py:itemC-plot"
 ```
 
-![Figure 2](/neuralNetworks/exercises/perceptron/figures/figure2.png)
+![Figure 2](figures/figure2.png)
 
 Figure 3 plots accuracy against epoch, tracking the climb from chance level (0.50) up to full separation by epoch 27–28. The rise isn't perfectly monotonic — accuracy dips and spikes along the way (e.g. epoch 9 jumps to 0.8485 before falling back to 0.6030 at epoch 10) - reflecting how each weight update can temporarily overcorrect before the boundary settles.
 
 ``` { .python .copy .select linenums="1" }
    --8<-- "exercises/perceptron/exercise1.py:itemC-plot-accuracy"
 ```
-![Figure 3](/neuralNetworks/exercises/perceptron/figures/figure3.png)
+![Figure 3](figures/figure3.png)
 
 ### D - Analysis
 
@@ -98,7 +98,7 @@ The means are now close together and the spread is three times larger, so the cl
 
 Figure 4 shows a scatter plot of all 2000 points, colored by class.
 
-![Figure 4](/neuralNetworks/exercises/perceptron/figures/figure4.png)
+![Figure 4](figures/figure4.png)
 
 ### B - Training, Keeping the Best Weights
 
@@ -131,7 +131,7 @@ Figure 5 shows both decision boundaries - final and pocket - drawn over the data
    --8<-- "exercises/perceptron/exercise2.py:itemC-plot"
 ```
 
-![Figure 5](/neuralNetworks/exercises/perceptron/figures/figure5.png)
+![Figure 5](figures/figure5.png)
 
 Figure 6 plots two curves against epoch: the accuracy of the current weights at each step, and the best-so-far accuracy.
 
@@ -139,7 +139,7 @@ Figure 6 plots two curves against epoch: the accuracy of the current weights at 
    --8<-- "exercises/perceptron/exercise2.py:itemC-plot-accuracy"
 ```
 
-![Figure 6](/neuralNetworks/exercises/perceptron/figures/figure6.png)
+![Figure 6](figures/figure6.png)
 
 ### D - Analysis
 
@@ -147,11 +147,11 @@ Figure 6 plots two curves against epoch: the accuracy of the current weights at 
 
 | # | Quantity | Value |
 |---|----------|-------|
-| 1 | Exercise 1 — final $\mathbf{w}$ and $b$ | [0.05304435 0.02461711], -0.26 |
+| 1 | Exercise 1 — final $\mathbf{w}$ and $b$ | [0.0530, 0.0246], -0.26 |
 | 2 | Exercise 1 — epochs to convergence | 28 |
 | 3 | Exercise 1 — final accuracy | 1.00 |
 | 4 | Exercise 1 — epochs and final accuracy with $\eta = 1.0$ | 33, 1.00 |
-| 5 | Exercise 2 — final $\mathbf{w}$ and $b$ | [0.04132471 0.04149595], -0.04 |
+| 5 | Exercise 2 — final $\mathbf{w}$ and $b$ | [0.0413, 0.0414], -0.04 |
 | 6 | Exercise 2 — accuracy of the final weights | 0.5005 |
 | 7 | Exercise 2 — accuracy of the pocket weights | 0.7285 |
 | 8 | Exercise 2 — epoch at which the pocket best occurred | 53 |

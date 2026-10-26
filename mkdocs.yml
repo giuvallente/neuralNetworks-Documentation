@@ -134,8 +134,8 @@ nav:
     - 2. Perceptron: exercises/perceptron/index.md
     - 3. MLP: exercises/mlp/index.md
 
-  # - Project:
-  #   - 1. EDA: project/eda/index.md
+  - Project:
+    - 1. EDA: project/eda/index.md
   #   - 2. Classificação: project/classification/index.md
   #   - 2. Regressão: project/regression/index.md
   #   - 3. Generativo: project/generative/index.md

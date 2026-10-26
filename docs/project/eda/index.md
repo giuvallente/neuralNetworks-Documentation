@@ -365,7 +365,7 @@ PC1 is driven mainly by standardized salary, with additional contributions from 
 **t-SNE and UMAP.** To keep the computation tractable, t-SNE and UMAP were applied to a stratified sample of 5,000 development employees (layoff rate 20.4%), using two values of `perplexity` (30 and 100) for t-SNE and two values of `n_neighbors` (15 and 50) for UMAP. The PCA projection of the same sample is shown for comparison.
 
 ``` { .python .copy .select linenums="1" }
-   --8<-- "neuralNetworks-Project/neuralNetworks-Project/codeDocumentation/eda.py:itemB4-figures"
+   --8<-- "neuralNetworks-Project/codeDocumentation/eda.py:itemB4-figures"
 ```
 
 ![Figure 7](figures/figure7.png)

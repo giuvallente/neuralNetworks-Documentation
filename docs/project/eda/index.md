@@ -420,10 +420,10 @@ The `baseline` set (24 columns) is the same list without the 5 columns of the st
 
 ### Main Findings
 
-1. **The target is imbalanced.** 6,107 employees (20.36%) were laid off, against 23,893 retained, a ratio of 3.91:1 (Table 4). The stratified split keeps this proportion in the development set, test set and every fold (Table 5).
+1. **The target is imbalanced.** 6,107 employees (20.36%) were laid off, against 23,893 retained, a ratio of 3.91:1 (Table 4). The stratified split keeps this proportion in the development set, test set and every fold.
 2. **Structural features are the strongest signals.** Layoff rates are 73.28% when `team_wind_down = 1` against 11.57% otherwise, and 37.26% in cost centers against 12.30% in revenue areas (Figure 4, Table 9). Department, `on_pip` (37.26% against 19.03%) and `role_redundant` (32.12% against 18.74%) also differ clearly, while `remote` shows no difference (Figure 4).
-3. **The numerical predictors are not redundant with each other**, with all pairwise |ρ| ≤ 0.007 (Table 8, Figure 2). They are, however, tied to derived features: `is_recent_hire` follows from tenure (Figure 5a), and salary follows seniority (Figure 5c).
-4. **The data are clean.** There are no missing or invalid values (Table 2), and the outliers flagged by the IQR rule are plausible (Table 6, Figure 1).
+3. **The numerical predictors are not redundant with each other**, with all pairwise |ρ| ≤ 0.007. They are, however, tied to derived features: `is_recent_hire` follows from tenure, and salary follows seniority.
+4. **The data are clean.** There are no missing or invalid values, and the outliers flagged by the IQR rule are plausible.
 5. **The classes are not visibly separable in 2D.** PC1 + PC2 explain 35.8% of the variance (Figure 6), and PCA, t-SNE and UMAP show overlapping classes (Figure 7).
 
 ### Risks and Handling Plan
@@ -432,13 +432,11 @@ The table below shows the risks for modeling and how to handle them.
 
 | Risk | Handling plan |
 |---|---|
-| **Target leakage:** `team_wind_down`, `role_redundant`, `cost_center_type` and `on_pip` may reveal the decision or be set after it (Stage 1B). | Confirm when each field becomes available. Report `baseline` and `extended` side by side, and exclude any field that would not exist at prediction time. |
 | **Class imbalance** (3.91:1) makes accuracy misleading. | Use stratified splits (already in place), metrics such as precision, recall, F1 and PR-AUC rather than accuracy alone, class weights, and a decision threshold chosen on the cross-validation folds, never on the test set. |
 | **A single dominant feature:** `team_wind_down` has by far the largest difference in layoff rate (Figure 4) and could overshadow the other features. | Compare feature sets and check permutation importance; interpret the baseline model separately. |
 | **Weak separability** of individual attributes in 2D (Figure 7). | Do not draw conclusions from the projections; rely on cross-validated performance and consider nonlinear interactions between features. |
 | **Redundancy by construction:** `is_recent_hire` and `high_salary` are derived from continuous features, and `level` is tied to salary. | Keep them (the redundancy is deterministic), use regularization, and check whether removing them changes validation performance. |
-| **8 duplicate rows** when `employee_id` is excluded. | Keep them: they may be distinct employees, and they are 0.03% of the data. |
-| **Unseen categories** in validation or test data. | `handle_unknown="ignore"` in the encoder keeps the input dimension fixed (Stage 4A). |
+| **Unseen categories** in validation or test data. | `handle_unknown="ignore"` in the encoder keeps the input dimension fixed. |
 | **Synthetic data:** the structure may be simpler than a real layoff. | Treat results as a property of this dataset; do not use the model to make decisions about real employees. |
 
 ### Results Summary

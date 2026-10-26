@@ -27,13 +27,13 @@ This report presents the exploratory data analysis (EDA) of the *Layoff Survival
 **What each row represents.** Each row is one simulated employee, with their attributes and the layoff outcome.
 
 ``` { .python .copy .select linenums="1" }
-   --8<-- "codeDocumentation/eda.py:download"
+   --8<-- "neuralNetworks-Project/codeDocumentation/eda.py:download"
 ```
 
 The file has 30,000 rows and 15 columns. 
 
 ``` { .python .copy .select linenums="1" }
-   --8<-- "codeDocumentation/eda.py:itemA1"
+   --8<-- "neuralNetworks-Project/codeDocumentation/eda.py:itemA1"
 ```
 The table below documents the meaning, type, and unit of each column.
 
@@ -60,19 +60,19 @@ The table below documents the meaning, type, and unit of each column.
 **Missing Values.** No column has missing values: every one of the 15 columns has 0 missing entries (0.00%).
 
 ``` { .python .copy .select linenums="1" }
-   --8<-- "codeDocumentation/eda.py:itemB1-missing"
+   --8<-- "neuralNetworks-Project/codeDocumentation/eda.py:itemB1-missing"
 ```
 
 **Duplicates.** There are no exact duplicate rows, and every `employee_id` is unique. When `employee_id` is excluded, however, 8 rows repeat the values of an earlier row across all remaining columns. The 8 rows are 0.03% of the data.
 
 ``` { .python .copy .select linenums="1" }
-   --8<-- "codeDocumentation/eda.py:itemB1-duplicates"
+   --8<-- "neuralNetworks-Project/codeDocumentation/eda.py:itemB1-duplicates"
 ```
 
 **Impossible or Inconsistent Values.** Binary columns were checked for values outside 0/1, categorical columns for categories outside those listed on the inicial inspect, and numerical columns against their valid ranges. The derived column `is_recent_hire` was also checked against its definition (`tenure_years < 1`). All checks flagged 0 rows.
 
 ``` { .python .copy .select linenums="1" }
-   --8<-- "codeDocumentation/eda.py:itemB1-impossible"
+   --8<-- "neuralNetworks-Project/codeDocumentation/eda.py:itemB1-impossible"
 ```
 
 The table below summarizes all 3 quality checks above.
@@ -104,7 +104,7 @@ Three columns, `team_wind_down`, `role_redundant` and `cost_center_type`, descri
 The target `laid_off` has no missing or unexpected values; only 0 and 1 appear.
 
 ``` { .python .copy .select linenums="1" }
-   --8<-- "codeDocumentation/eda.py:itemC1"
+   --8<-- "neuralNetworks-Project/codeDocumentation/eda.py:itemC1"
 ```
 
 The table below shows the target distribution.
@@ -119,7 +119,7 @@ The classes are imbalanced: the majority class has about **3.91 times** as many 
 ### D. Train and Test Split
 
 ``` { .python .copy .select linenums="1" }
-   --8<-- "codeDocumentation/eda.py:itemD1"
+   --8<-- "neuralNetworks-Project/codeDocumentation/eda.py:itemD1"
 ```
 
 Because the target is imbalanced, the data were first split with a **stratified 80/20 split**: 80% (24,000 employees) form the *development set* and 20% (6,000 employees) form the *test set*, which is not touched until the final evaluation. The development set is then divided into **five stratified folds**. In each iteration, four folds (19,200 employees) train the network and the remaining fold (4,800 employees) validates it, so that every fold is used once for validation. Stratification keeps the layoff proportion at about 20% everywhere. All preprocessing is re-fitted inside each iteration on the four training folds only, so nothing from the validation fold leaks into training.
@@ -141,7 +141,7 @@ The table below shows the split sizes and layoff proportion.
 The author's claim is that the baseline barely beats chance while the extended set is strong. This is a hypothesis to be verified with the models, not a result of this analysis. The claim was made for a baseline with only three features, so it may not hold once the remaining predictors are added; this will be checked empirically in the classification deliverable.
 
 ``` { .python .copy .select linenums="1" }
-   --8<-- "codeDocumentation/eda.py:itemD1-feature-sets"
+   --8<-- "neuralNetworks-Project/codeDocumentation/eda.py:itemD1-feature-sets"
 ```
 
 ## Stage 2: Univariate Analysis
@@ -151,7 +151,7 @@ The author's claim is that the baseline barely beats chance while the extended s
 The table below describes the three numerical features over all 30,000 employees, and Figure 1 shows a histogram and a boxplot for each. Histograms were chosen to show shape, modes and skewness, and boxplots to show quartiles, spread and outliers under the IQR rule (values outside $[Q_1 - 1.5\,\mathrm{IQR},\ Q_3 + 1.5\,\mathrm{IQR}]$).
 
 ``` { .python .copy .select linenums="1" }
-   --8<-- "codeDocumentation/eda.py:itemA2"
+   --8<-- "neuralNetworks-Project/codeDocumentation/eda.py:itemA2"
 ```
 
 Descriptive statistics of the numerical features.
@@ -163,7 +163,7 @@ Descriptive statistics of the numerical features.
 | `salary_k_usd` | 30,000 | 163.65 | 66.22 | 51 | 114 | 151 | 198 | 600 | 1.06 | 84 | 806 |
 
 ``` { .python .copy .select linenums="1" }
-   --8<-- "codeDocumentation/eda.py:itemA2-figures"
+   --8<-- "neuralNetworks-Project/codeDocumentation/eda.py:itemA2-figures"
 ```
 
 ![Figure 1](figures/figure1.png)
@@ -183,7 +183,7 @@ Descriptive statistics of the numerical features.
 The table below reports the cardinality and the frequency of every category for the 10 categorical predictors (4 text categories and 6 binary indicators).
 
 ``` { .python .copy .select linenums="1" }
-   --8<-- "codeDocumentation/eda.py:itemB2"
+   --8<-- "neuralNetworks-Project/codeDocumentation/eda.py:itemB2"
 ```
 
 Cardinality and category frequencies (% of 30,000 employees). 
@@ -210,7 +210,7 @@ Cardinality and category frequencies (% of 30,000 employees).
 Spearman's rank correlation was used because tenure and salary are right-skewed with high values, and because the analysis should not assume that any relationship is linear. It was computed on the development set only.
 
 ``` { .python .copy .select linenums="1" }
-   --8<-- "codeDocumentation/eda.py:itemA3"
+   --8<-- "neuralNetworks-Project/codeDocumentation/eda.py:itemA3"
 ```
 
 The table below shows Spearman correlations between numerical features (development set).
@@ -222,7 +222,7 @@ The table below shows Spearman correlations between numerical features (developm
 | `performance_rating` × `salary_k_usd` | −0.006 | No |
 
 ``` { .python .copy .select linenums="1" }
-   --8<-- "codeDocumentation/eda.py:itemA3-figures"
+   --8<-- "neuralNetworks-Project/codeDocumentation/eda.py:itemA3-figures"
 ```
 
 ![Figure 2](figures/figure2.png)
@@ -242,7 +242,7 @@ All three correlations are close to zero: tenure and performance rating (ρ = 0.
 For every categorical feature, Figure 4 shows the proportion of employees laid off within each category of the development set, against the overall rate of 20.36%.
 
 ``` { .python .copy .select linenums="1" }
-   --8<-- "codeDocumentation/eda.py:itemB3"
+   --8<-- "neuralNetworks-Project/codeDocumentation/eda.py:itemB3"
 ```
 
 The table below shows the layoff rate within each category (development set; overall rate 20.36%).
@@ -261,7 +261,7 @@ The table below shows the layoff rate within each category (development set; ove
 | `remote` | 0: 20.42%, 1: 20.28% |
 
 ``` { .python .copy .select linenums="1" }
-   --8<-- "codeDocumentation/eda.py:itemB3-figures"
+   --8<-- "neuralNetworks-Project/codeDocumentation/eda.py:itemB3-figures"
 ```
 
 ![Figure 4](figures/figure4.png)
@@ -277,11 +277,11 @@ The largest difference appears for `team_wind_down`: about 73% of employees whos
 For each numerical feature, grouped boxplots compare location (median) and spread (IQR) across the groups of every categorical feature, on the development set. Outliers are hidden in the boxplots and the group medians and IQRs are computed in the code output.
 
 ``` { .python .copy .select linenums="1" }
-   --8<-- "codeDocumentation/eda.py:itemC3"
+   --8<-- "neuralNetworks-Project/codeDocumentation/eda.py:itemC3"
 ```
 
 ``` { .python .copy .select linenums="1" }
-   --8<-- "codeDocumentation/eda.py:itemC3-figures"
+   --8<-- "neuralNetworks-Project/codeDocumentation/eda.py:itemC3-figures"
 ```
 
 ![Figure 5a](figures/figure5_tenure_years.png)
@@ -327,11 +327,11 @@ Each strategy described in the table below is tied to the finding that motivates
 The pipeline is fitted on training data only: inside each cross-validation iteration it is fitted on the four training folds and applied to the held-out fold, and for the final model it is fitted on the full development set and applied to the test set. The code below fits the preprocessor on the development set and checks the pipeline under 5-fold cross-validation for each feature set.
 
 ``` { .python .copy .select linenums="1" }
-   --8<-- "codeDocumentation/eda.py:itemA4"
+   --8<-- "neuralNetworks-Project/codeDocumentation/eda.py:itemA4"
 ```
 
 ``` { .python .copy .select linenums="1" }
-   --8<-- "codeDocumentation/eda.py:itemA4-cv"
+   --8<-- "neuralNetworks-Project/codeDocumentation/eda.py:itemA4-cv"
 ```
 
 In all 10 runs (2 feature sets × 5 folds) the training matrices have shape `(19200, 24)` for `baseline` and `(19200, 29)` for `extended`, the validation matrices have 4,800 rows, and 0 `NaN` values remain. The layoff proportion stays at 20.35–20.36% in every training fold.
@@ -341,7 +341,7 @@ In all 10 runs (2 feature sets × 5 folds) the training matrices have shape `(19
 **PCA.** PCA was fitted on the preprocessed development set (24,000 employees, all 13 predictors, 29 encoded columns) without any validation or test data.
 
 ``` { .python .copy .select linenums="1" }
-   --8<-- "codeDocumentation/eda.py:itemB4"
+   --8<-- "neuralNetworks-Project/codeDocumentation/eda.py:itemB4"
 ```
 
 ![Figure 6](figures/figure6.png)
@@ -365,7 +365,7 @@ PC1 is driven mainly by standardized salary, with additional contributions from 
 **t-SNE and UMAP.** To keep the computation tractable, t-SNE and UMAP were applied to a stratified sample of 5,000 development employees (layoff rate 20.4%), using two values of `perplexity` (30 and 100) for t-SNE and two values of `n_neighbors` (15 and 50) for UMAP. The PCA projection of the same sample is shown for comparison.
 
 ``` { .python .copy .select linenums="1" }
-   --8<-- "eda.py:itemB4-figures"
+   --8<-- "neuralNetworks-Project/neuralNetworks-Project/codeDocumentation/eda.py:itemB4-figures"
 ```
 
 ![Figure 7](figures/figure7.png)
@@ -413,7 +413,7 @@ The table below shows the output shape after the pipeline.
 The `baseline` set (24 columns) is the same list without the 5 columns of the structural drivers: the 3 `cost_center_type` columns, `team_wind_down` and `role_redundant`. In the code, the names carry the prefixes `numeric__`, `categorical__` and `binary__`.
 
 ``` { .python .copy .select linenums="1" }
-   --8<-- "code/preprocessing.py:preprocessing"
+   --8<-- "neuralNetworks-Project/code/preprocessing.py:preprocessing"
 ```
 
 ## Stage 5: Synthesis

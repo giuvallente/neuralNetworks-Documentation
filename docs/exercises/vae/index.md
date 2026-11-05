@@ -124,8 +124,8 @@ Figure 3 shows an \(8 \times 8\) grid of images decoded from \(z \sim \mathcal{N
 
 2. Figure 3 looks worse than Figure 2 — blurrier digits, some that are no digit at all. Give **two** separate reasons, one about *where* the prior samples land in the latent space, and one about *what* the decoder outputs for a given $z$.
 
-    **A:** 
-    - **Where the prior samples land.** The KL on the test set is not zero (about 18.5 nats), so the distribution of encoded images (the aggregate posterior) does not match N(0, I). The prior has regions where no training image was ever encoded, such as the gaps between digit clusters and the far tails. A prior sample can land there, and the decoder is extrapolating in those places. This explains samples that are no digit at all, such as the smudged ones in rows 2 and 8. Figure 2 only decodes `μ` of real images, which are always in well-covered regions.
+    **A:**<br>
+    - **Where the prior samples land.** The KL on the test set is not zero (about 18.5 nats), so the distribution of encoded images (the aggregate posterior) does not match N(0, I). The prior has regions where no training image was ever encoded, such as the gaps between digit clusters and the far tails. A prior sample can land there, and the decoder is extrapolating in those places. This explains samples that are no digit at all, such as the smudged ones in rows 2 and 8. Figure 2 only decodes `μ` of real images, which are always in well-covered regions.<br>
     - **What the decoder outputs for a given `z`.** With a Bernoulli (BCE) likelihood, the best output for a given `z` is the mean of all images that could have produced that `z`, because averaging minimizes the expected loss. A single code cannot fix exact stroke position and thickness, so the decoder outputs this average and the picture is blurry. If a `z` sits between two digit modes, the average is a superposition of both, which gives the half-3, half-8 shapes. This blur is also visible in Figure 2, where the 5 and 8 reconstructions are fuzzy.
 
 3. Why decode $\mu$ and not a sampled $z$ in Figure 2?

@@ -38,16 +38,16 @@ The architecture is the one in the statement, with latent dimension \(d = 16\):
 | Part    | Layers                                                                                  |
 |---------|-----------------------------------------------------------------------------------------|
 | Encoder | \(784 \to 512 \to 256\), ReLU after each                                                |
-| Heads   | two linear layers \(256 \to d\): one for \(\boldsymbol{\mu}\), one for \(\log \boldsymbol{\sigma}^2\) |
+| Heads   | two linear layers \(256 \to d\): one for \(\mu\), one for \(\log \sigma^2\) |
 | Decoder | \(d \to 256 \to 512 \to 784\), ReLU after the hidden layers, sigmoid at the output      |
 
 With \(d = 16\) the model has 1,079,600 trainable parameters.
 
-**Reparameterization.** Sampling \(z \sim \mathcal{N}(\boldsymbol{\mu}, \boldsymbol{\sigma}^2)\) directly would block the gradient. Instead, the noise is drawn separately and the sample is built from it:
+**Reparameterization.** Sampling \(z \sim \mathcal{N}(\mu, \sigma^2)\) directly would block the gradient. Instead, the noise is drawn separately and the sample is built from it:
 
-\[ \mathbf{z} = \boldsymbol{\mu} + \boldsymbol{\sigma} \odot \boldsymbol{\varepsilon}, \qquad \boldsymbol{\sigma} = \exp\!\left(\tfrac{1}{2}\log \boldsymbol{\sigma}^2\right), \qquad \boldsymbol{\varepsilon} \sim \mathcal{N}(\mathbf{0}, I) \]
+\[ \mathbf{z} = \mu + \sigma \odot \varepsilon, \qquad \sigma = \exp\!\left(\tfrac{1}{2}\log \sigma^2\right), \qquad \varepsilon \sim \mathcal{N}(\mathbf{0}, I) \]
 
-so the gradient reaches \(\boldsymbol{\mu}\) and \(\log \boldsymbol{\sigma}^2\) through a deterministic path. The encoder predicts \(\log \boldsymbol{\sigma}^2\) and not \(\boldsymbol{\sigma}\) so that the output is unconstrained and \(\boldsymbol{\sigma}\) is always positive after the exponential.
+so the gradient reaches \(\mu\) and \(\log \sigma^2\) through a deterministic path. The encoder predicts \(\log \sigma^2\) and not \(\sigma\) so that the output is unconstrained and \(\sigma\) is always positive after the exponential.
 
 **Loss.** The loss per image is the negative ELBO with a weight \(\beta = 1\) on the KL term:
 
@@ -96,7 +96,7 @@ On the training set, the epoch-average reconstruction falls from 177.5 nats in t
 
 ### D - Reconstructions and Samples
 
-Figure 2 shows the first test image of each digit 0-9 (top row) and its reconstruction (bottom row). The reconstruction decodes \(\boldsymbol{\mu}\) and does not sample \(z\).
+Figure 2 shows the first test image of each digit 0-9 (top row) and its reconstruction (bottom row). The reconstruction decodes \(\mu\) and does not sample \(z\).
 
 ``` python
 --8<-- "exercises/vae/exercise1.py:itemD"
@@ -104,7 +104,7 @@ Figure 2 shows the first test image of each digit 0-9 (top row) and its reconstr
 
 [![Figure 2](figures/figure2.png)](figures/figure2.png)
 
-*Figure 2 — First test image of each digit and its reconstruction, decoded from \(\boldsymbol{\mu}\).*
+*Figure 2 — First test image of each digit and its reconstruction, decoded from \(\mu\).*
 
 Figure 3 shows an \(8 \times 8\) grid of images decoded from \(z \sim \mathcal{N}(0, I)\), drawn after `torch.manual_seed(0)`.
 
@@ -128,7 +128,7 @@ Figure 3 shows an \(8 \times 8\) grid of images decoded from \(z \sim \mathcal{N
     - **Where the prior samples land.** The KL on the test set is not zero (about 18.5 nats), so the distribution of encoded images (the aggregate posterior) does not match N(0, I). The prior has regions where no training image was ever encoded, such as the gaps between digit clusters and the far tails. A prior sample can land there, and the decoder is extrapolating in those places. This explains samples that are no digit at all, such as the smudged ones in rows 2 and 8. Figure 2 only decodes `μ` of real images, which are always in well-covered regions.
     - **What the decoder outputs for a given `z`.** With a Bernoulli (BCE) likelihood, the best output for a given `z` is the mean of all images that could have produced that `z`, because averaging minimizes the expected loss. A single code cannot fix exact stroke position and thickness, so the decoder outputs this average and the picture is blurry. If a `z` sits between two digit modes, the average is a superposition of both, which gives the half-3, half-8 shapes. This blur is also visible in Figure 2, where the 5 and 8 reconstructions are fuzzy.
 
-3. Why decode $\boldsymbol{\mu}$ and not a sampled $z$ in Figure 2?
+3. Why decode $\mu$ and not a sampled $z$ in Figure 2?
 
     **A:** `μ` is the center of the encoder's distribution q(z|x), so it is the one code that best represents that image. A sampled `z = μ + σε` adds random noise, which gives a different, usually worse image each time. The training loss does use sampled `z`, but that noise is there to regularize the latent space. For showing what the model learned about a specific image, the deterministic `μ` gives a reproducible figure without sampling noise.
 
@@ -161,7 +161,7 @@ The \(d = 16\) model is trained again here with the same seed and recipe as in E
 
 ### B - The Encoded Test Set
 
-Figure 4 shows \(\boldsymbol{\mu}\) for all 10,000 test images with \(d = 2\), colored by digit.
+Figure 4 shows \(\mu\) for all 10,000 test images with \(d = 2\), colored by digit.
 
 ``` python
 --8<-- "exercises/vae/exercise2.py:itemB"
@@ -169,7 +169,7 @@ Figure 4 shows \(\boldsymbol{\mu}\) for all 10,000 test images with \(d = 2\), c
 
 [![Figure 4](figures/figure4.png)](figures/figure4.png)
 
-*Figure 4 — Latent means \(\boldsymbol{\mu}\) of the 10,000 test images (\(d = 2\)), colored by digit.*
+*Figure 4 — Latent means \(\mu\) of the 10,000 test images (\(d = 2\)), colored by digit.*
 
 ### C - The Decoded Plane
 
@@ -185,7 +185,7 @@ The grid is not spaced linearly. The 15 values of each axis are \(z = \Phi^{-1}(
 
 ### D - Interpolation
 
-The two test images are the first 3 and the first 8 of the test set: test index 18 (digit 3) and test index 61 (digit 8). The top row of Figure 6 interpolates in pixel space, \((1 - t)\,\mathbf{x}_a + t\,\mathbf{x}_b\). The bottom row interpolates in latent space with the \(d = 16\) model of Exercise 1: it decodes \((1 - t)\,\boldsymbol{\mu}_a + t\,\boldsymbol{\mu}_b\), for 10 values of \(t\) from 0 to 1.
+The two test images are the first 3 and the first 8 of the test set: test index 18 (digit 3) and test index 61 (digit 8). The top row of Figure 6 interpolates in pixel space, \((1 - t)\,\mathbf{x}_a + t\,\mathbf{x}_b\). The bottom row interpolates in latent space with the \(d = 16\) model of Exercise 1: it decodes \((1 - t)\,\mu_a + t\,\mu_b\), for 10 values of \(t\) from 0 to 1.
 
 ``` python
 --8<-- "exercises/vae/exercise2.py:itemD"

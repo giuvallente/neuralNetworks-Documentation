@@ -1,6 +1,6 @@
 ---
 exercise: mlp
-ai_use: "LEMBRA DE PREENCHER"
+ai_use: "Claude was used to assemble and format this report from my code (exercise1.py, exercise2.py, exercise3.py, exercise4.py), my figures and my analysis notes."
 ---
 
 # 3. MLP

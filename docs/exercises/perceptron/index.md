@@ -1,6 +1,6 @@
 ---
 exercise: perceptron
-ai_use: "LEMBRA DE PREENCHER"
+ai_use: "Claude was used to assemble and format this report from my code (exercise1.py, exercise2.py), my figures and my analysis notes."
 ---
 
 # 2. Perceptron

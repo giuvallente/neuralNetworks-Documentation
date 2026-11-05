@@ -26,7 +26,7 @@ This activity builds a Variational Autoencoder (VAE) in PyTorch, with the repara
 MNIST comes from `torchvision`, with pixels in \([0, 1]\) (`transforms.ToTensor()`), flattened into 784-vectors. The 60,000 training images are split into 50,000 for training and 10,000 for validation with a generator seeded with 42, and the 10,000 official test images are the test set.
 
 ``` python
---8<-- "docs/exercises/vae/code/exercise1.py:itemA"
+--8<-- "exercises/vae/exercise1.py:itemA"
 ```
 
 The split has 50,000 training, 10,000 validation and 10,000 test images, each an item of shape `(784,)`.
@@ -56,7 +56,7 @@ so the gradient reaches \(\boldsymbol{\mu}\) and \(\log \boldsymbol{\sigma}^2\) 
 The reconstruction term is the Bernoulli negative log-likelihood, which fits the sigmoid output and MNIST pixels that are almost all 0 or 1. It is computed with `F.binary_cross_entropy(..., reduction="sum")` divided by the batch size; `reduction="mean"` would also average over the pixels and shrink this term 784 times relative to the KL, which is the same as secretly setting \(\beta \approx 784\). The KL is the closed form for a diagonal Gaussian against the standard normal, written out in the code (no `torch.distributions.kl_divergence`). Both terms are returned separately so they can be logged. The `sample` method draws \(z \sim \mathcal{N}(0, I)\) and decodes it.
 
 ``` python
---8<-- "docs/exercises/vae/code/exercise1.py:itemB"
+--8<-- "exercises/vae/exercise1.py:itemB"
 ```
 
 ### C - Train
@@ -75,7 +75,7 @@ The reconstruction term is the Bernoulli negative log-likelihood, which fits the
 The training values are the average over the batches of the epoch, computed while the weights are still changing. The validation values come from one pass of the whole validation set through the model at the end of the epoch, with one sample of \(z\) per image. The test set is evaluated the same way, once, after the last epoch.
 
 ``` python
---8<-- "docs/exercises/vae/code/exercise1.py:itemC"
+--8<-- "exercises/vae/exercise1.py:itemC"
 ```
 
 Test results (\(d = 16\)), in nats per image:
@@ -85,7 +85,7 @@ Test results (\(d = 16\)), in nats per image:
 | 84.15    | 18.49 | 102.64  |
 
 ``` python
---8<-- "docs/exercises/vae/code/exercise1.py:itemC-figure"
+--8<-- "exercises/vae/exercise1.py:itemC-figure"
 ```
 
 [![Figure 1](figures/figure1.png)](figures/figure1.png)
@@ -99,7 +99,7 @@ On the training set, the epoch-average reconstruction falls from 177.5 nats in t
 Figure 2 shows the first test image of each digit 0-9 (top row) and its reconstruction (bottom row). The reconstruction decodes \(\boldsymbol{\mu}\) and does not sample \(z\).
 
 ``` python
---8<-- "docs/exercises/vae/code/exercise1.py:itemD"
+--8<-- "exercises/vae/exercise1.py:itemD"
 ```
 
 [![Figure 2](figures/figure2.png)](figures/figure2.png)
@@ -109,7 +109,7 @@ Figure 2 shows the first test image of each digit 0-9 (top row) and its reconstr
 Figure 3 shows an \(8 \times 8\) grid of images decoded from \(z \sim \mathcal{N}(0, I)\), drawn after `torch.manual_seed(0)`.
 
 ``` python
---8<-- "docs/exercises/vae/code/exercise1.py:itemD-figure"
+--8<-- "exercises/vae/exercise1.py:itemD-figure"
 ```
 
 [![Figure 3](figures/figure3.png)](figures/figure3.png)
@@ -141,11 +141,11 @@ With \(d = 16\) the latent space cannot be drawn. With \(d = 2\) it can, at a pr
 `train_vae(d)` is the Exercise 1 recipe (Adam, learning rate \(10^{-3}\), batch size 128, 20 epochs, \(\beta = 1\), seed 42 before building the model) as a function of the latent dimension. It is called for `d = 16` and for `d = 2`, on the same data split.
 
 ``` python
---8<-- "docs/exercises/vae/code/exercise2.py:itemA"
+--8<-- "exercises/vae/exercise2.py:itemA"
 ```
 
 ``` python
---8<-- "docs/exercises/vae/code/exercise2.py:itemA-results"
+--8<-- "exercises/vae/exercise2.py:itemA-results"
 ```
 
 Test results, in nats per image:
@@ -164,7 +164,7 @@ The \(d = 16\) model is trained again here with the same seed and recipe as in E
 Figure 4 shows \(\boldsymbol{\mu}\) for all 10,000 test images with \(d = 2\), colored by digit.
 
 ``` python
---8<-- "docs/exercises/vae/code/exercise2.py:itemB"
+--8<-- "exercises/vae/exercise2.py:itemB"
 ```
 
 [![Figure 4](figures/figure4.png)](figures/figure4.png)
@@ -176,7 +176,7 @@ Figure 4 shows \(\boldsymbol{\mu}\) for all 10,000 test images with \(d = 2\), c
 The grid is not spaced linearly. The 15 values of each axis are \(z = \Phi^{-1}(q)\), with \(q\) running over 15 evenly spaced values in \([0.05, 0.95]\) and \(\Phi^{-1}\) the inverse CDF of \(\mathcal{N}(0, 1)\) (`scipy.stats.norm.ppf`). This spacing gives every cell the same prior mass because consecutive grid values are separated by the same step in cumulative probability, so each interval holds the same share of the \(\mathcal{N}(0, 1)\) mass on each axis, and the cells of the 2-D grid, being products of two such intervals, hold the same share of \(\mathcal{N}(0, I)\).
 
 ``` python
---8<-- "docs/exercises/vae/code/exercise2.py:itemC"
+--8<-- "exercises/vae/exercise2.py:itemC"
 ```
 
 [![Figure 5](figures/figure5.png)](figures/figure5.png)
@@ -188,7 +188,7 @@ The grid is not spaced linearly. The 15 values of each axis are \(z = \Phi^{-1}(
 The two test images are the first 3 and the first 8 of the test set: test index 18 (digit 3) and test index 61 (digit 8). The top row of Figure 6 interpolates in pixel space, \((1 - t)\,\mathbf{x}_a + t\,\mathbf{x}_b\). The bottom row interpolates in latent space with the \(d = 16\) model of Exercise 1: it decodes \((1 - t)\,\boldsymbol{\mu}_a + t\,\boldsymbol{\mu}_b\), for 10 values of \(t\) from 0 to 1.
 
 ``` python
---8<-- "docs/exercises/vae/code/exercise2.py:itemD"
+--8<-- "exercises/vae/exercise2.py:itemD"
 ```
 
 [![Figure 6](figures/figure6.png)](figures/figure6.png)
